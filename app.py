@@ -1,0 +1,57 @@
+from flask import Flask
+from flask_restful import Resource, Api, reqparse
+import pandas as pd
+import ast
+from routes.User import routes_user
+
+import pyrebase
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
+
+app = Flask(__name__)
+api = Api(app)
+
+# api.add_resource(Users,'/users')
+
+config = {
+    'apiKey': "AIzaSyCO0n3pln59pmtGR9nNECnvRjfNnriRsy8",
+    'authDomain': "ta-supermarket-1f444.firebaseapp.com",
+    'databaseURL': "https://ta-supermarket-1f444-default-rtdb.asia-southeast1.firebasedatabase.app",
+    'projectId': "ta-supermarket-1f444",
+    'storageBucket': "ta-supermarket-1f444.appspot.com",
+    'messagingSenderId': "673810078830",
+    'appId': "1:673810078830:web:b733a2013db87e0ca55a7f",
+    'measurementId': "G-L9V2YYG0S8"
+}
+
+# cred = credentials.Certificate('key-supermarket.json')
+# firebase = firebase_admin.initialize_app(cred)
+
+firebase = pyrebase.initialize_app(config)
+db = firebase.database()
+auth = firebase.auth()
+
+email = "selig668@gmail.com"
+password = "12345678"
+
+# auth.create_user_with_email_and_password(email, password)
+user = auth.sign_in_with_email_and_password(email, password)
+token = user['idToken']
+# print(user)
+
+storage = firebase.storage()
+# storage.child("folder1/folder2/contoh.jpg").put("./resources/aplikasi.png")
+# storage.child("folder1/folder2/contoh.jpg").download("","download1.jpg")
+
+url = storage.child("folder1/folder2/contoh.jpg").get_url(token)
+print(url)
+
+routes_user(app)
+
+
+
+if __name__ == '__main__':
+    # app.run(debug=True, port=5000)
+    app.run()
+    # app.run()
