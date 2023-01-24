@@ -1,14 +1,16 @@
 import pyrebase as pb
 import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import firestore
+from firebase_admin import credentials, firestore
 
 # Use a service account.
 
-firebase = None
+pyrebaseLib = None
+firestoreDb = None
 
 def init_firebase():
-    global firebase
+
+    # init pyrebase
+    global pyrebaseLib
 
     config = {
         'apiKey': "AIzaSyCO0n3pln59pmtGR9nNECnvRjfNnriRsy8",
@@ -21,11 +23,22 @@ def init_firebase():
         'measurementId': "G-L9V2YYG0S8"
     }
 
+    pyrebaseLib = pb.initialize_app(config)
+
+    # init firestore
+    global firestoreDb
+
     cred = credentials.Certificate('key-supermarket.json')
-    # firebase = firebase_admin.initialize_app(cred)
-    firebase = pyrebase.initialize_app(config)
+    firebase_admin.initialize_app(cred)
+
+    firestoreDb = firestore.client()
+
 
 def get_database():
-    # return firebase.client()
-    return firebase.database()
+    return firestoreDb
 
+def get_auth():
+    return pyrebaseLib.auth()
+
+def get_storage():
+    return pyrebaseLib.storage()
