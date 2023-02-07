@@ -1,23 +1,40 @@
 from configs.firebase import get_database
 
 class Model():
-    @classmethod
-    def get_all(cls, limit = None, asc = False):
-        db = get_database()
-        data = db.collection(cls).get()
-        # panggil convert to dict mbe ksh limit
-        if limit is None:
-            return data.to_dict()
-            return db.child(cls.__name__.lower() + 's').get(token).val()
-        if asc:
-            return db.child(cls.__name__.lower() + 's').order_by_key().limit_to_first(limit).get(token).val()
-        return db.child(cls.__name__.lower() + 's').order_by_key().limit_to_last(limit).get(token).val()
     
+    @classmethod
+    def get_all(cls):
+        db = get_database()
+        data = db.collection(cls.__name__.lower()).get()
+        d_dict = Model.convert_to_dict(data)
+        return d_dict
+
+    @classmethod
+    def get_by_id(cls, id):
+        db = get_database()
+        data = db.collection(cls.__name__.lower()).document(id)
+        return data.get().to_dict()
+
+    @classmethod
+    def insert(cls, data ,token):
+        db = get_database()
+        return db.child(cls.__name__.lower() + 's').push(data, token)
+    
+    @classmethod
+    def update(cls, id, data ,token):
+        db = get_database()
+        return db.child(cls.__name__.lower() + 's').child(id).update(data, token)
+
+    @classmethod
+    def delete(cls, id ,token):
+        db = get_database()
+        return db.child(cls.__name__.lower() + 's').child(id).remove(token)
     
     def convert_to_dict(data):
         arr = []
         for d in data:
             arr.append({
-                'key':d.id
+                'key':d.id,
+                'data' : d.to_dict()
             })
         return arr
