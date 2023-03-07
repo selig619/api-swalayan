@@ -20,7 +20,7 @@ def routes_transaction(app):
     
     @app.route(USER_BASE_URL + '/all', methods = ['GET'])
     # @check_token
-    def getAllTrans():
+    def getAllFreqIsets():
         trans = FreqIset.get_all()
 
         # db = get_database()
